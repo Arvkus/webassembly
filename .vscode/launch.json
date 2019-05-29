@@ -1,0 +1,34 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "name": "C++ Debug (gdb)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/cpp/bin/main.out",
+            "preLaunchTask": "Build",
+            "cwd": "${workspaceFolder}",
+
+
+            /*
+            "args": [],
+            "stopAtEntry": false,
+            
+
+            // others not required ??
+            "environment": [],
+            //"externalConsole": true,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+            */
+        }
+    ]
+}
