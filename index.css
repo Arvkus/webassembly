@@ -1,0 +1,71 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    font-family: Arial;
+}
+
+.d-flex { display: flex;}
+.flex-1 { flex: 1;}
+.m-1{ margin: 2px;}
+.m-2{ margin: 4px;}
+.p-1{ padding: 2px;}
+.p-2{ padding: 4px;}
+span{ margin-right: 20px;}
+a {color: grey;}
+
+/*-----------------------------*/
+
+section{
+    flex: 0 250px;
+    height: 96vh;
+}
+
+footer{
+    background: black;
+    color: white;
+    align-items: center;
+    height: 4vh;
+}
+
+aside{
+    flex-flow: column;
+    flex: 0 200px;
+}
+
+aside > div{
+    background: rgb(204, 204, 204);
+}
+
+aside form, aside .model-container{
+    border: 1px solid rgb(0, 0, 0);
+    background: white;
+}
+
+
+
+#renderer{
+    background-color: grey;
+    height: 100%;
+    width: 100%;
+}
+
+/*-----------------------*/
+
+.content{
+    overflow-y: scroll;
+    max-height: 100%;
+}
+
+.box{
+    height: 400px;
+}
+
+
+.model{
+    background: white;
+    flex: 1;
+    margin: 2px;
+    height: 110px;
+    border: 1px solid black;
+}
+

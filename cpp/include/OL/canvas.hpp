@@ -32,6 +32,8 @@ public:
 
         context = SDL_GL_CreateContext(window); // openGL container/renderer
 
+        glEnable(GL_DEPTH_TEST); 
+        
         // successfuly created a window
         printf("Program start! | %s | %s\n",glGetString(GL_VERSION),glGetString(GL_RENDERER)); 
 
@@ -55,17 +57,22 @@ public:
         SDL_SetWindowSize(window, x, y);
     }
 
+    float get_aspect_ratio(){
+        return (float)window_x/window_y;
+    }
+
     void handle_window_event(SDL_Event event_object){
 
         if(event_object.type == SDL_WINDOWEVENT){
             if(event_object.window.event == SDL_WINDOWEVENT_SIZE_CHANGED){
                 int x = event_object.window.data1;
                 int y = event_object.window.data2;
-                //std::cout<<x<<" "<<y<<std::endl;
                 glViewport(0,0,x,y);
+                std::cout<<" changed size"<<std::endl;
+                window_x = x;
+                window_y = y;
             }
         }
-
     }
     
 };

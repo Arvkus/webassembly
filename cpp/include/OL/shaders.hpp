@@ -108,7 +108,7 @@ public:
 
     void set_uniform(const char* variable, glm::mat4 value){
         unsigned int location = glGetUniformLocation(program, variable);
-        glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+        glUniformMatrix4fv(location, 1, GL_FALSE, &value[0][0] );
     }
 
     void set_uniform(const char* variable, glm::vec4 value){
