@@ -15,15 +15,12 @@
 #include <iostream>
 #include <functional>
 
-std::function<void()> loop;
-
 #ifdef EMSCRIPTEN
 
 #include <unistd.h> // usleep function for loop
 #include "emscripten/emscripten.h"
 
 #else
-
 
 
 #endif
@@ -64,7 +61,7 @@ int main(int argc, char *argv[]) {
     glEnableVertexAttribArray(1);
 
 
-    loop = [&]
+    std::function<void()> loop = [&]
     {
         // input
     
@@ -84,11 +81,7 @@ int main(int argc, char *argv[]) {
     // main loop
     #ifdef EMSCRIPTEN
 
-
-        //loop();
-            
-        emscripten_set_main_loop(main_loop, 0, true);
-        
+        emscripten_set_main_loop(loop, 0, true);
 
     #else
 
