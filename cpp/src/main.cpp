@@ -25,6 +25,9 @@
 
 #endif
 
+std::function<void()> loop;
+void main_loop(){ loop(); }
+
 int main(int argc, char *argv[]) {
 
     Canvas canvas = Canvas();
@@ -59,7 +62,7 @@ int main(int argc, char *argv[]) {
     glEnableVertexAttribArray(1);
 
 
-    std::function<void()> loop = [&]
+    loop = [&]
     {
         // input
     
@@ -79,7 +82,7 @@ int main(int argc, char *argv[]) {
     // main loop
     #ifdef EMSCRIPTEN
 
-        emscripten_set_main_loop(loop, 0, true);
+        emscripten_set_main_loop(main_loop, 0, true);
 
     #else
 

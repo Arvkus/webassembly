@@ -24,6 +24,23 @@
         "type_traits": "cpp",
         "typeinfo": "cpp",
         "fstream": "cpp",
-        "functional": "cpp"
+        "functional": "cpp",
+        "array": "cpp",
+        "hash_map": "cpp",
+        "cstdarg": "cpp",
+        "cstddef": "cpp",
+        "cstring": "cpp",
+        "ctime": "cpp",
+        "deque": "cpp",
+        "list": "cpp",
+        "unordered_map": "cpp",
+        "vector": "cpp",
+        "iomanip": "cpp",
+        "memory": "cpp",
+        "optional": "cpp",
+        "sstream": "cpp",
+        "cinttypes": "cpp",
+        "tuple": "cpp",
+        "utility": "cpp"
     }
 }

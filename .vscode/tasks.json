@@ -4,13 +4,7 @@
         {
             "label": "Build",
             "type": "shell",
-            /*
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
 
-            */
             "command": "cd ${workspaceFolder} \n g++ -Wall -std=c++17 cpp/src/*.cpp -o \"cpp/bin/main.out\" -I cpp/include -lGLESv2 -lSDL2 ",
 
             "presentation": {

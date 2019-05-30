@@ -2,7 +2,6 @@ g++ -Wall -std=c++17 cpp/src/*.cpp lib/* -o "cpp/bin/main.out" -I cpp/include -l
 
 em++ -std=c++11 cpp/src/*.cpp -I cpp/include -o index.html -s WASM=1 -s USE_SDL=2 -s FULL_ES3=1 -O3 -s USE_WEBGL2=1 --preload-file filesystem
 
-bin/main.out
 cd ${workspaceFolder}
 python -m SimpleHTTPServer 8080
 
