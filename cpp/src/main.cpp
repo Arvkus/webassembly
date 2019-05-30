@@ -25,8 +25,6 @@
 
 #endif
 
-void main_loop(){ loop(); }
-
 int main(int argc, char *argv[]) {
 
     Canvas canvas = Canvas();
