@@ -88,7 +88,9 @@ int main(int argc, char *argv[]) {
         glClearColor(0.12 ,0.1, 0.2, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        object.draw(VAO);
+        //object.draw(VAO);
+        glBindVertexArray(VAO);
+        glDrawElements(GL_TRIANGLES, object.index_vertices.size(), GL_UNSIGNED_INT, 0);
 
         // events // ----------------
         if(SDL_PollEvent(&event)){ // if there's an event
