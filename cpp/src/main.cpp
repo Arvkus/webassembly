@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
     glGenBuffers(1, &EBO);
     //------------------------------------------------------------------------
 
-    Model object = Model("filesystem/models/model1.obj");
+    Model object = Model("filesystem/models/model2.obj");
     object.bind_buffers(VBO, EBO, VAO);
 
     camera.origin = object.center;
