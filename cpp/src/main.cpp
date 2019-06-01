@@ -21,6 +21,9 @@
 #include <iostream>
 #include <functional>
 #include <sstream>
+#include <chrono>
+
+#include <unistd.h>
 
 std::function<void()> loop;
 void main_loop(){ loop(); }
@@ -30,13 +33,18 @@ void main_loop(){ loop(); }
     #include "emscripten/emscripten.h"
 
     extern "C"{
-        EMSCRIPTEN_KEEPALIVE void change_ratio(int x, int y){
-            std::cout<<"JS: " << x << " " << y << std::endl;
+        EMSCRIPTEN_KEEPALIVE void load_model(std::string data){
+            std::cout<< data << std::endl;
         }
     }
+
+    EM_JS(void,display_fps,(int f),{
+        document.querySelector("#span_fps").innerHTML = "FPS: " + f;
+    })
 #else
-
-
+    void display_fps(int f){
+        std::cout<<"Current fps: "<<f<<std::endl;
+    }
 #endif
 
 void print(std::string a){
@@ -72,15 +80,29 @@ int main(int argc, char *argv[]) {
     //------------------------------------------------------------------------
 
     bool mouse_hold = false;
+    int frame_counter = 0;
 
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)640/480, 0.1f, 100.0f);
     glm::mat4 view = camera.move(0,0);
     glm::mat4 model = glm::mat4(1.0f);
 
     //------------------------------------------------------------------------
+    
+    std::chrono::time_point<std::chrono::system_clock> last_update;
+    last_update = std::chrono::system_clock::now();
 
     loop = [&]
-    {  
+    { 
+        // milli > micro > nano
+        std::chrono::duration<float, std::milli> elapsed = std::chrono::system_clock::now() - last_update;
+        if(elapsed.count() >= 1000.0f){
+            last_update = std::chrono::system_clock::now();
+            display_fps(frame_counter);
+            frame_counter = 0;
+        }
+
+        frame_counter++;
+        
         //  render // ----------------
         sp.use();
         glClearColor(0.12 ,0.1, 0.2, 1.0);
@@ -142,7 +164,7 @@ int main(int argc, char *argv[]) {
 
     // main loop
     #ifdef EMSCRIPTEN
-        emscripten_set_main_loop(main_loop, 0, true);
+        emscripten_set_main_loop(main_loop, 5000, true);
     #else
         while(true){
             loop();

@@ -5,9 +5,24 @@
 #include <GLM/glm.hpp>
 #include <GLES3/gl3.h>
 
-class Model{
+#ifdef EMSCRIPTEN
+    #include "emscripten/emscripten.h"
+    EM_JS(void,model_complexity,(int vert, int tris),{
 
+        document.querySelector("#span_vert").innerHTML = "Vert: " + vert;
+        document.querySelector("#span_tris").innerHTML = "Tris: " + tris;
+
+    })
+#else
+    void model_complexity(int vert, int tris){
+        std::cout<< "Vert: " << vert << ", Tris: " << tris << std::endl;
+    }
+#endif
+
+
+class Model{
 private:
+
     void get_integers(std::string word, unsigned int *nums){ // get all integers from string (max 3)
         //std::cout<<" " << word <<" ";
         std::string number;
@@ -130,9 +145,9 @@ public:
         if( read_file(path)/* read file */){
             std::cout<< "File successful: " << path << std::endl;
             calculate_properties();
-            std::cout<< "Vert: " << vert << ", Tris: " << tris << std::endl;
-
+            
             //for(int i = 0; i < normals.size(); i++)normals[i] = 0.5f; // testing
+            model_complexity(vert, tris);
         }else{
             std::cout<< "Can't open file: " << path << std::endl;
             
@@ -150,9 +165,9 @@ public:
     */
 
     void bind_buffers(unsigned int &VBO, unsigned int &EBO, unsigned int &VAO){
-        // add UVs later
         unsigned int s_vertices = vertices.size() * sizeof(float);
         unsigned int s_normals  = normals.size()  * sizeof(float);
+        unsigned int s_uvs      = uvs.size()      * sizeof(float);
         unsigned int s_indices  = index_vertices.size() * sizeof(unsigned int); // all 3 indices size is the same
 
         //std::cout<<"Sizes: " << s_vertices << " " << s_normals << std::endl;
@@ -160,25 +175,34 @@ public:
 
         // values
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, s_vertices + s_normals , NULL , GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, s_vertices + s_normals + s_uvs, NULL , GL_DYNAMIC_DRAW);
 
         glBufferSubData(GL_ARRAY_BUFFER, 0, s_vertices, &vertices[0]); // vertices
         glBufferSubData(GL_ARRAY_BUFFER, s_vertices, s_normals, &normals[0]); // normals
+        glBufferSubData(GL_ARRAY_BUFFER, s_vertices+ s_normals, s_uvs, &uvs[0]); // uvs
 
         // indices
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, s_indices, NULL, GL_DYNAMIC_DRAW); 
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, s_indices/* + s_normals + s_uvs */, NULL, GL_DYNAMIC_DRAW); 
 
         glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, s_indices, &index_vertices[0]); // vertices
-        //glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, s_indices, s_indices, &index_normals[0]); // normals
+        //glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, s_indices, s_normals, &index_normals[0]); // normals 
+        //glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, s_indices+ s_normals, s_uvs, &index_uvs[0]); // uvs
 
         // attributes
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0 );
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0 ); // should be s_vertices?
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0 ); // vertex
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0 ); // normal
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), (void*)0 ); // uv
 
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
+        glEnableVertexAttribArray(2);
     }
 
-    ~Model(){};
+    /*
+    ~Model(){
+        std::cout<<"model destruction"<<std::endl;
+        // deallocate memory ???
+    };
+    */
 };

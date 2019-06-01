@@ -12,14 +12,14 @@ in vec3 frag_pos;
   
 void main()
 {   
-    vec3 light_color = vec3(1.0);
-    vec3 object_color = vec3(0.5);
-    vec3 ambient_color = vec3(0.2);
+    vec3 light_color = vec3(0.9);
+    vec3 object_color = vec3(0.4);
+    vec3 ambient_color = vec3(0.4);
 
     // light calculations
     
     vec3 norm = normalize(ourNormal);
-    vec3 light_pos = vec3(-5,15,-15);
+    vec3 light_pos = vec3(-10,30,-30);
     vec3 light_dir = normalize(light_pos - frag_pos);
 
     
