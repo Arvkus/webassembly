@@ -13,16 +13,16 @@ private:
         pos.y = sin(glm::radians((float)yaw));
         pos.z = cos(glm::radians((float)yaw)) * sin(glm::radians((float)pitch));
 
-        return glm::lookAt(pos * distance, origin, glm::vec3(0,1,0));
+        return glm::lookAt(origin + pos * distance, origin, glm::vec3(0,1,0));;
     }
 
 public:
-    glm::vec3 origin = glm::vec3();
+    glm::vec3 origin = glm::vec3(0,5,0);
 
     float distance = 5.0f;
-    int pitch = 0; //   |
-    int yaw   = 0; //  ___
-    int roll  = 0; //
+    int pitch = 0; // vertical
+    int yaw   = 0; // horizontal
+    int roll  = 0;
 
 
     //----------------------------------------------

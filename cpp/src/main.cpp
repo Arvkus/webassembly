@@ -3,7 +3,7 @@
 //#define GL_GLEXT_PROTOTYPES 1 //compiler will asume that some funcs are available
 //#include <SDL/SDL_opengles2.h> // SDL GLES2 ??
 
-#define GL3_PROTOTYPES 1
+//#define GL3_PROTOTYPES 1
 //#define EMSCRIPTEN
 
 #include <GLES3/gl3.h>
@@ -11,6 +11,7 @@
 #include "OL/shaders.hpp"
 #include "OL/canvas.hpp"
 #include "OL/camera.hpp"
+#include "OL/model.hpp" 
 
 #include <GLM/glm.hpp>
 #include <GLM/gtc/matrix_transform.hpp>
@@ -37,6 +38,9 @@ void main_loop(){ loop(); }
 
 #endif
 
+void print(std::string a){
+    std::cout<<a<<std::endl;
+}
 
 int main(int argc, char *argv[]) {
 
@@ -47,75 +51,40 @@ int main(int argc, char *argv[]) {
     SDL_Event event; // track events
 
     Shader_program sp = Shader_program();
-    
-    
-
-    float vertices[] = {
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-        0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-    }; 
 
     //------------------------------------------------------------------------
 
+    Model object = Model("filesystem/models/windmill.obj");
+    camera.origin = object.center;
+    camera.distance = object.length*2;
 
     //------------------------------------------------------------------------
-    
-
 
     unsigned int VBO;
     glGenBuffers(1, &VBO);
+
+    unsigned int EBO;
+    glGenBuffers(1, &EBO);
 
     unsigned int VAO;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER,sizeof(vertices), vertices, GL_STATIC_DRAW);
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(vertices) , vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, object.vertices.size() * sizeof(float) , &object.vertices[0], GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)0 );
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); 
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, object.index_vertices.size() * sizeof(unsigned int), &object.index_vertices[0], GL_STATIC_DRAW); 
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0 );
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+    //glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(3 * sizeof(float)));
+    //glEnableVertexAttribArray(1);
+    
+    //------------------------------------------------------------------------
 
     bool mouse_hold = false;
 
@@ -123,6 +92,8 @@ int main(int argc, char *argv[]) {
     glm::mat4 view = camera.move(0,0);
     glm::mat4 model = glm::mat4(1.0f);
     //camera = glm::translate(camera, glm::vec3(0.0f, -1.5f, -5.0f));
+
+    //------------------------------------------------------------------------
 
     loop = [&]
     {
@@ -138,9 +109,9 @@ int main(int argc, char *argv[]) {
         glClearColor(0.12 ,0.1, 0.2, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        //glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glDrawElements(GL_TRIANGLES, object.index_vertices.size(), GL_UNSIGNED_INT, 0);
+        //glDrawArrays(GL_TRIANGLES, 0, object.vertices.size()); 
 
         // events // ----------------
         if(SDL_PollEvent(&event)){ // if there's an event
