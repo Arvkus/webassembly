@@ -132,35 +132,51 @@ public:
             calculate_properties();
             std::cout<< "Vert: " << vert << ", Tris: " << tris << std::endl;
 
-
+            //for(int i = 0; i < normals.size(); i++)normals[i] = 0.5f; // testing
         }else{
             std::cout<< "Can't open file: " << path << std::endl;
+            
+            
         }
 
     };
 
-    void draw(unsigned int &VAO){
+    /*
+    void draw(unsigned int &VAO){ 
+        // out of bounds error/warning in browser, if failed to open file
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, index_vertices.size(), GL_UNSIGNED_INT, 0);
     }
+    */
 
     void bind_buffers(unsigned int &VBO, unsigned int &EBO, unsigned int &VAO){
+        // add UVs later
+        unsigned int s_vertices = vertices.size() * sizeof(float);
+        unsigned int s_normals  = normals.size()  * sizeof(float);
+        unsigned int s_indices  = index_vertices.size() * sizeof(unsigned int); // all 3 indices size is the same
+
         glBindVertexArray(VAO);
 
-        // vertices of triangle
+        // values
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float) , &vertices[0], GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, s_vertices + s_normals , NULL , GL_DYNAMIC_DRAW);
 
-        // indices of triangle
+        glBufferSubData(GL_ARRAY_BUFFER, 0, s_vertices, &vertices[0]); // vertices
+        glBufferSubData(GL_ARRAY_BUFFER, s_vertices, s_normals, &normals[0]); // normals
+
+        // indices
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_vertices.size() * sizeof(unsigned int), &index_vertices[0], GL_STATIC_DRAW); 
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, s_indices*2, NULL, GL_DYNAMIC_DRAW); 
+
+        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, s_indices, &index_vertices[0]); // vertices
+        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, s_indices, s_indices, &index_normals[0]); // normals
 
         // attributes
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0 );
-        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)s_vertices);
 
-        //glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(3 * sizeof(float)));
-        //glEnableVertexAttribArray(1);
+        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
     }
 
     ~Model(){};

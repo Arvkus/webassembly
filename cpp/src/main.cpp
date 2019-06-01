@@ -77,8 +77,6 @@ int main(int argc, char *argv[]) {
     glm::mat4 view = camera.move(0,0);
     glm::mat4 model = glm::mat4(1.0f);
 
-    //camera = glm::translate(camera, glm::vec3(0.0f, -1.5f, -5.0f));
-
     //------------------------------------------------------------------------
 
     loop = [&]
@@ -128,8 +126,6 @@ int main(int argc, char *argv[]) {
                     camera.distance = object.length*1.5;
                     view = camera.zoom(0); // update camera position
 
-                    
-
                 }
                 
             }
@@ -143,7 +139,6 @@ int main(int argc, char *argv[]) {
 
         SDL_GL_SwapWindow(window);
     };
-
 
     // main loop
     #ifdef EMSCRIPTEN
