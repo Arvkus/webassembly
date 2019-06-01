@@ -155,6 +155,7 @@ public:
         unsigned int s_normals  = normals.size()  * sizeof(float);
         unsigned int s_indices  = index_vertices.size() * sizeof(unsigned int); // all 3 indices size is the same
 
+        //std::cout<<"Sizes: " << s_vertices << " " << s_normals << std::endl;
         glBindVertexArray(VAO);
 
         // values
@@ -166,14 +167,14 @@ public:
 
         // indices
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, s_indices*2, NULL, GL_DYNAMIC_DRAW); 
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, s_indices, NULL, GL_DYNAMIC_DRAW); 
 
         glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, s_indices, &index_vertices[0]); // vertices
-        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, s_indices, s_indices, &index_normals[0]); // normals
+        //glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, s_indices, s_indices, &index_normals[0]); // normals
 
         // attributes
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0 );
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)s_vertices);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0 ); // should be s_vertices?
 
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
