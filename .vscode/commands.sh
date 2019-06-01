@@ -1,6 +1,6 @@
 g++ -Wall -std=c++17 cpp/src/*.cpp lib/* -o "cpp/bin/main.out" -I cpp/include -lGLESv2 -lSDL2
 
-em++ -std=c++11 cpp/src/*.cpp -I cpp/include -o module.html -s WASM=1 -s USE_SDL=2 -s FULL_ES3=1 -O3 -s USE_WEBGL2=1 --preload-file filesystem
+em++ -std=c++11 cpp/src/*.cpp -I cpp/include -o module.js -s WASM=1 -s USE_SDL=2 -s FULL_ES3=1 -O3 -s USE_WEBGL2=1 --preload-file filesystem
 
 --disable-gpu-vsync
 

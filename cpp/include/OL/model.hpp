@@ -3,6 +3,7 @@
 #include <fstream>
 #include <vector>
 #include <GLM/glm.hpp>
+#include <GLES3/gl3.h>
 
 class Model{
 
@@ -28,13 +29,13 @@ private:
         }
     }
 
-    void read_file(const char * path){
+    bool read_file(const char * path){
 
         std::ifstream file(path);
         std::string word;
         float a,b,c;
 
-        if (!file.is_open()) return;
+        if (!file.is_open()) return false;
 
         while(file >> word){
             
@@ -78,9 +79,10 @@ private:
         }
 
         file.close();
+        return true;
     }
 
-    void calculate_center(){
+    void calculate_properties(){
         glm::vec3 min(0.0f);
         glm::vec3 max(0.0f);
         glm::vec3 delta(0.0f);
@@ -101,11 +103,13 @@ private:
         delta = min - max;
         length = sqrt( pow(delta.x,2) + pow(delta.y,2) + pow(delta.z,2) );
 
+        vert = vertices.size()/3; // x,y,z
+        tris = index_vertices.size()/3; // x,y,z
     }
-
 
 public:
 
+    // compact vector data:
     std::vector <unsigned int> index_vertices; 
     std::vector <unsigned int> index_uvs;
     std::vector <unsigned int> index_normals;
@@ -114,26 +118,50 @@ public:
     std::vector <float> uvs;
     std::vector <float> normals;
 
-    unsigned int vert = 0;
-    unsigned int tris = 0;
+    // metadata:
+    unsigned int vert = 0; // vertices count
+    unsigned int tris = 0; // triangles count
 
-    glm::vec3 center = glm::vec3(0.0f);
-    float length;
+    glm::vec3 center = glm::vec3(0.0f); // center of model
+    float length; // distance between furthest points
 
+    // constructor:
     Model(const char * path){
-        read_file(path);
+        if( read_file(path)/* read file */){
+            std::cout<< "File successful: " << path << std::endl;
+            calculate_properties();
+            std::cout<< "Vert: " << vert << ", Tris: " << tris << std::endl;
 
-        vert = vertices.size()/3;
-        tris = index_vertices.size()/3;
 
-        calculate_center();
+        }else{
+            std::cout<< "Can't open file: " << path << std::endl;
+        }
+
     };
 
+    void draw(unsigned int &VAO){
+        glBindVertexArray(VAO);
+        glDrawElements(GL_TRIANGLES, index_vertices.size(), GL_UNSIGNED_INT, 0);
+    }
+
+    void bind_buffers(unsigned int &VBO, unsigned int &EBO, unsigned int &VAO){
+        glBindVertexArray(VAO);
+
+        // vertices of triangle
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float) , &vertices[0], GL_STATIC_DRAW);
+
+        // indices of triangle
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_vertices.size() * sizeof(unsigned int), &index_vertices[0], GL_STATIC_DRAW); 
+
+        // attributes
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0 );
+        glEnableVertexAttribArray(0);
+
+        //glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(3 * sizeof(float)));
+        //glEnableVertexAttribArray(1);
+    }
 
     ~Model(){};
-
 };
-
-
-// https://stackoverflow.com/questions/47313403/passing-client-files-to-webassembly-from-the-front-end
-// https://gamedev.stackexchange.com/questions/75989/what-is-the-correct-way-to-reset-and-load-new-data-into-gl-array-buffer

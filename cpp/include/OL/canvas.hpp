@@ -61,7 +61,7 @@ public:
         return (float)window_x/window_y;
     }
 
-    void handle_window_event(SDL_Event event_object){
+    bool handle_window_event(SDL_Event event_object){
 
         if(event_object.type == SDL_WINDOWEVENT){
             if(event_object.window.event == SDL_WINDOWEVENT_SIZE_CHANGED){
@@ -71,8 +71,13 @@ public:
                 std::cout<<" changed size"<<std::endl;
                 window_x = x;
                 window_y = y;
+                return true;
             }
         }
+        return false;
     }
+
+    //bool handle_mouse_event(SDL_Event event_object){
+
     
 };
