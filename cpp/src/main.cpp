@@ -23,7 +23,8 @@
 #include <sstream>
 #include <chrono>
 
-#include <unistd.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 std::function<void()> loop;
 void main_loop(){ loop(); }
@@ -39,11 +40,11 @@ void main_loop(){ loop(); }
     }
 
     EM_JS(void,display_fps,(int f),{
-        document.querySelector("#span_fps").innerHTML = "FPS: " + f;
+        document.querySelector("#span_fps").innerHTML = "Kadrai: " + f;
     })
 #else
     void display_fps(int f){
-        std::cout<<"Current fps: "<<f<<std::endl;
+        //std::cout<<"Current fps: "<<f<<std::endl;
     }
 #endif
 
@@ -70,7 +71,25 @@ int main(int argc, char *argv[]) {
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
     //------------------------------------------------------------------------
+    unsigned int texture;
+    glGenTextures(1, &texture); 
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+    int width, height, nrChannels;
+    unsigned char *data = stbi_load("filesystem/models/model1.png", &width, &height, &nrChannels, 0);
+    if(data){
+        std::cout<<"Texture loaded" << std::endl;
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }else{
+        std::cout<<"Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+
+
+    //------------------------------------------------------------------------
     Model object = Model("filesystem/models/model2.obj");
     object.bind_buffers(VBO, EBO, VAO);
 
@@ -110,7 +129,7 @@ int main(int argc, char *argv[]) {
 
         //object.draw(VAO);
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, object.index_vertices.size(), GL_UNSIGNED_INT, 0);
+        glDrawArrays(GL_TRIANGLES, 0, object.vert);
 
         // events // ----------------
         if(SDL_PollEvent(&event)){ // if there's an event
