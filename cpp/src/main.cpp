@@ -23,9 +23,7 @@
 #include <sstream>
 #include <chrono>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-
+std::function<void(int)> model_update;
 std::function<void()> loop;
 void main_loop(){ loop(); }
 
@@ -34,8 +32,8 @@ void main_loop(){ loop(); }
     #include "emscripten/emscripten.h"
 
     extern "C"{
-        EMSCRIPTEN_KEEPALIVE void load_model(std::string data){
-            std::cout<< data << std::endl;
+        EMSCRIPTEN_KEEPALIVE void load_model(int id){
+            model_update(id);
         }
     }
 
@@ -48,10 +46,6 @@ void main_loop(){ loop(); }
     }
 #endif
 
-void print(std::string a){
-    std::cout<<a<<std::endl;
-}
-
 int main(int argc, char *argv[]) {
 
     Canvas canvas = Canvas();
@@ -60,58 +54,44 @@ int main(int argc, char *argv[]) {
     SDL_Window *window = canvas.get_window(); // create window
     SDL_Event event; // track events
 
-    Shader_program sp = Shader_program();
-
+    Shader_program sp = Shader_program(); sp.use();
+    
     //------------------------------------------------------------------------
-    // Vertex buffer object
-    // Element buffer object
-    // Vertex array object
-    unsigned int VBO, EBO, VAO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-    //------------------------------------------------------------------------
-    unsigned int texture;
-    glGenTextures(1, &texture); 
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-    int width, height, nrChannels;
-    unsigned char *data = stbi_load("filesystem/models/model1.png", &width, &height, &nrChannels, 0);
-    if(data){
-        std::cout<<"Texture loaded" << std::endl;
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }else{
-        std::cout<<"Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
-
-
-    //------------------------------------------------------------------------
-    Model object = Model("filesystem/models/model2.obj");
-    object.bind_buffers(VBO, EBO, VAO);
-
-    camera.origin = object.center;
-    camera.distance = object.length*1.5;
-
-    //------------------------------------------------------------------------
-
-    bool mouse_hold = false;
-    int frame_counter = 0;
 
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)640/480, 0.1f, 100.0f);
     glm::mat4 view = camera.move(0,0);
     glm::mat4 model = glm::mat4(1.0f);
 
     //------------------------------------------------------------------------
+
+    Model object = Model("filesystem/models/model1");
+    object.initialize(sp.get_program());
+    camera.origin = object.center;
+    camera.distance = object.length*1.5;
+    view = camera.zoom(0); // update camera position
+
+    model_update = [&](int num){
+        std::stringstream ss;
+        ss << "filesystem/models/model" << num;
+
+        object = Model(ss.str());
+        object.initialize(sp.get_program());
+        camera.origin = object.center;
+        camera.distance = object.length*1.5;
+        view = camera.zoom(0); // update camera position
+        
+    };
     
+
+    //------------------------------------------------------------------------
+    bool mouse_hold = false;
+    int frame_counter = 0;
+
     std::chrono::time_point<std::chrono::system_clock> last_update;
     last_update = std::chrono::system_clock::now();
 
-    loop = [&]
-    { 
+    loop = [&]{ 
+
         // milli > micro > nano
         std::chrono::duration<float, std::milli> elapsed = std::chrono::system_clock::now() - last_update;
         if(elapsed.count() >= 1000.0f){
@@ -126,10 +106,7 @@ int main(int argc, char *argv[]) {
         sp.use();
         glClearColor(0.12 ,0.1, 0.2, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        //object.draw(VAO);
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, object.vert);
+        object.draw();
 
         // events // ----------------
         if(SDL_PollEvent(&event)){ // if there's an event
@@ -158,15 +135,15 @@ int main(int argc, char *argv[]) {
                     std::cout << key << std::endl; 
 
                     std::stringstream ss;
-                    ss << "filesystem/models/model" << key << ".obj";
+                    ss << "filesystem/models/model" << key;
 
-                    object = Model(ss.str().c_str());
-                    object.bind_buffers(VBO, EBO, VAO);
+                    object.desroy();
+                    object = Model(ss.str());
+                    object.initialize(sp.get_program());
 
                     camera.origin = object.center;
                     camera.distance = object.length*1.5;
                     view = camera.zoom(0); // update camera position
-
                 }
                 
             }

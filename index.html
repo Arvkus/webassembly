@@ -21,14 +21,10 @@
             </div>
 
             <div class="m-2 border">
-                <p class="m-2">Ikelti 3D modelio failus:</p>
+                <p class="m-2">Wavefront failas (.obj):</p>
                 <form action="">
                     <div class="d-flex">
-                        <p class="flex-1 m-2">.obj</p> <input type="file" class="m-2">
-                    </div>
-
-                    <div class="d-flex">
-                        <p class="flex-1 m-2">.png </p> <input type="file" class="m-2">
+                        <input type="file" class="m-2">
                     </div>
                 </form>
             </div>
@@ -38,14 +34,33 @@
                 <p class="m-2">Pavyzdiniai 3D modeliai:</p> 
                 <div class="box">
 
-                    <div class="model"></div>
-                    <div class="model"></div>
-                    <div class="model"></div>
-                    <div class="model"></div>
-                    <div class="model"></div>
-                    <div class="model"></div>
-                    <div class="model"></div>
-                    <div class="model"></div>
+                    <div class="model"id=0>
+                        <p id=0>Ikeltas modelis</p>
+                    </div>
+
+                    <div class="model"id=1>
+                        <p id=1>Modelis 1: kubas</p>
+                    </div>
+
+                    <div class="model"id=2>
+                        <p id=2>Modelis 2: zuikis </p>
+                    </div>
+                    <div class="model"id=3>
+                        <p id=3>Modelis 3: drakonas</p>
+                    </div>
+                    <div class="model"id=4>
+                        <p id=4>Modelis 4: malunas</p>
+                    </div>
+                    <div class="model"id=5>
+                        <p id=5>Modelis 5: sautuvas</p>
+                    </div>
+                    <div class="model"id=6>
+                        <p id=6>Modelis 6: statula #1</p>
+                    </div>
+                    <div class="model">
+                        <p id=7>Modelis 7: statula #2</p>
+                    </div>
+
                 </div>  
             </div>
 
@@ -73,8 +88,34 @@
     var Module = {
         canvas: renderer
     }
-        
 </script>
 <script src="module.js"></script>
+
+<script>
+    function send_to_cpp(event){
+        _load_model(event.target.id);
+
+        let buttons = document.querySelectorAll(".model p");
+        for(let i = 0; i < buttons.length; i++){
+            buttons[i].style.background = "#FFFFFF";
+            buttons[i].style.color = "black";
+        }
+
+        event.target.style.background = "#1E1A32";
+        event.target.style.color = "white";
+    }
+
+    let buttons = document.querySelectorAll(".model p");
+
+    for(let i = 0; i < buttons.length; i++){
+        buttons[i].addEventListener("click", send_to_cpp);
+
+        if(i == 1){
+            buttons[i].style.background = "#1E1A32";
+            buttons[i].style.color = "white";
+        }
+    }
+
+</script>
 
 </html>

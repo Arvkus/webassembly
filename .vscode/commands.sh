@@ -12,7 +12,6 @@ python -m SimpleHTTPServer 8080
 # -std=c++1z use C++17 standart
 # -s SIDE_MODULE=1 create as dynamic lib, to use it `loadWebAssemblyModule`
 # --preload-file files package files to .data file (accessed same as fstream in web)
-# --embed-file files are inside .js fil
+# --embed-file files are inside .js generated script
 # -s ALLOW_MEMORY_GROWTH=1  -static amount of memory is reserved, increase that number
 # -s ASSERTIONS=1  - display more errors/warnings
-process_data("1/1/1",)
