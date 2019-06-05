@@ -84,8 +84,7 @@
     
 </body>
 
-
-<script>
+<script> // renderer
     let renderer = document.querySelector("#renderer");
     var Module = {
         canvas: renderer
@@ -93,7 +92,7 @@
 </script>
 <script src="module.js"></script>
 
-<script>
+<script> // buttons
     function send_to_cpp(event){
         _load_model(event.target.id);
 
@@ -117,7 +116,34 @@
             buttons[i].style.color = "white";
         }
     }
+</script>
 
+<script> // file upload
+    function file_input(event){
+        if (event.target.files.length == 0) return;
+        let file = event.target.files[0];
+
+        let fr = new FileReader();
+        fr.onload = function () {
+            let data = new Uint8Array(fr.result);
+             
+            try{
+                Module.FS_unlink("/filesystem/models/model0.obj");
+                console.log("Old file removed!");
+            }catch(e){
+                console.log("File doesn't exist!");
+            }
+
+            Module['FS_createDataFile']('/filesystem/models', 'model0.obj', data,
+             true, /* read  */
+             true, /* write */
+             true  /* own   */
+             );
+        };
+        fr.readAsArrayBuffer(file);
+    }
+
+    document.querySelector("input").addEventListener("change", file_input);
 </script>
 
 </html>
