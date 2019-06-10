@@ -12,15 +12,13 @@ in vec2 texture_pos;
 in vec3 normal;
 in vec3 vertex_pos;
 
-uniform int tex;
-uniform sampler2D texture_image;
+//uniform sampler2D texture_image;
 
 void main()
 {   
-
-    vec3 light_color = vec3(0.9);
-    vec3 object_color = vec3(0.5);
-    vec3 ambient_color = vec3(0.6);
+    vec3 light_color = vec3(.7);
+    vec3 object_color = vec3(0.7);
+    vec3 ambient_color = vec3(.5);
  
     vec3 light_dir = normalize( vec3(-1,1,1) );
     vec3 norm_dir = normalize(normal);
@@ -33,10 +31,12 @@ void main()
     vec3 result = (diffuse + ambient_color) * object_color;
 
     //vec3 result = vec3(.5);
+    /*
     if(tex == 1){
         FragColor = texture(texture_image, texture_pos) * vec4(result, 1.0);
     }else{
-        FragColor = vec4(result, 1.0);
-    }
+        
+    }*/
+    FragColor = vec4(result, 1.0);
     
 }

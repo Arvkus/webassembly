@@ -1,17 +1,19 @@
-//define the function's prototypes ???
-//#define GL3_PROTOTYPES 1
-//#define GL_GLEXT_PROTOTYPES 1 //compiler will asume that some funcs are available
-//#include <SDL/SDL_opengles2.h> // SDL GLES2 ??
+/* Arvydas Vitkus PS-16 */
 
+//define the function's prototypes
 //#define GL3_PROTOTYPES 1
-//#define EMSCRIPTEN
+//#define GL_GLEXT_PROTOTYPES 1 //compiler will asume that some functions are available
+//#include <SDL/SDL_opengles2.h> // SDL2 header
 
 #include <GLES3/gl3.h>
 #include <SDL/SDL.h>
-#include "OL/shaders.hpp"
+
 #include "OL/canvas.hpp"
 #include "OL/camera.hpp"
-#include "OL/model.hpp" 
+
+#include "OL/scene/shaders.hpp"
+#include "OL/scene/model.hpp"
+
 
 #include <GLM/glm.hpp>
 #include <GLM/gtc/matrix_transform.hpp>
@@ -46,50 +48,53 @@ void main_loop(){ loop(); }
     }
 #endif
 
-int main(int argc, char *argv[]) {
 
+int main(int argc, char *argv[]) {
+    GLenum err;
     Canvas canvas = Canvas();
     Camera camera = Camera();
 
     SDL_Window *window = canvas.get_window(); // create window
     SDL_Event event; // track events
 
-    Shader_program sp = Shader_program(); sp.use();
-    
+    Shader_program sp = Shader_program();
+
     //------------------------------------------------------------------------
 
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)640/480, 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)640/480, 0.1f, 10000.0f);
     glm::mat4 view = camera.move(0,0);
     glm::mat4 model = glm::mat4(1.0f);
 
     //------------------------------------------------------------------------
 
-    Model object = Model("filesystem/models/model1");
-    object.initialize(sp.get_program());
+    Model object = Model("filesystem/models/model1.obj");
     camera.origin = object.center;
     camera.distance = object.length*1.5;
     view = camera.zoom(0); // update camera position
 
     model_update = [&](int num){
         std::stringstream ss;
-        ss << "filesystem/models/model" << num;
+
+        ss << "filesystem/models/model" << num << ".obj";
 
         object = Model(ss.str());
-        object.initialize(sp.get_program());
         camera.origin = object.center;
         camera.distance = object.length*1.5;
-        view = camera.zoom(0); // update camera position
-        
+        view = camera.zoom(0); // update camera position 
     };
     
 
     //------------------------------------------------------------------------
     bool mouse_hold = false;
     int frame_counter = 0;
+    
 
     std::chrono::time_point<std::chrono::system_clock> last_update;
     last_update = std::chrono::system_clock::now();
 
+    if((err = glGetError()) != GL_NO_ERROR){
+        std::cout<<"error 2: " << err << std::endl;
+    }
     loop = [&]{ 
 
         // milli > micro > nano
@@ -103,11 +108,13 @@ int main(int argc, char *argv[]) {
         frame_counter++;
         
         //  render // ----------------
-        sp.use();
-        glClearColor(0.12 ,0.1, 0.2, 1.0);
+        //glClearColor(0.12 ,0.1, 0.2, 1.0);
+        glClearColor(1.0 ,1.0 , 1.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        object.draw();
 
+        sp.use();
+        object.draw();
+        
         // events // ----------------
         if(SDL_PollEvent(&event)){ // if there's an event
 
@@ -129,23 +136,11 @@ int main(int argc, char *argv[]) {
                 view = camera.zoom(event.wheel.y);
             }
 
-            if(event.type == SDL_KEYDOWN){
+            if(event.type == SDL_KEYDOWN){ // klaviaturos ivestis
                 char key = event.key.keysym.sym;
                 if(key >= '0' && key <= '9'){
-                    std::cout << key << std::endl; 
-
-                    std::stringstream ss;
-                    ss << "filesystem/models/model" << key;
-
-                    object.desroy();
-                    object = Model(ss.str());
-                    object.initialize(sp.get_program());
-
-                    camera.origin = object.center;
-                    camera.distance = object.length*1.5;
-                    view = camera.zoom(0); // update camera position
+                    model_update((int)(key - 48));
                 }
-                
             }
 
         }
@@ -160,7 +155,7 @@ int main(int argc, char *argv[]) {
 
     // main loop
     #ifdef EMSCRIPTEN
-        emscripten_set_main_loop(main_loop, 5000, true);
+        emscripten_set_main_loop(main_loop, 1000, true);
     #else
         while(true){
             loop();

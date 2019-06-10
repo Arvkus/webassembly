@@ -26,7 +26,6 @@ public:
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-        
         //SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
         //SDL_GL_SetSwapInterval(1); // turn on vsync
 
@@ -68,7 +67,7 @@ public:
                 int x = event_object.window.data1;
                 int y = event_object.window.data2;
                 glViewport(0,0,x,y);
-                std::cout<<" changed size"<<std::endl;
+                
                 window_x = x;
                 window_y = y;
                 return true;
@@ -76,8 +75,4 @@ public:
         }
         return false;
     }
-
-    //bool handle_mouse_event(SDL_Event event_object){
-
-    
 };

@@ -44,6 +44,11 @@
         "utility": "cpp",
         "bitset": "cpp",
         "chrono": "cpp",
-        "ratio": "cpp"
+        "ratio": "cpp",
+        "atomic": "cpp",
+        "condition_variable": "cpp",
+        "mutex": "cpp",
+        "numeric": "cpp",
+        "thread": "cpp"
     }
 }

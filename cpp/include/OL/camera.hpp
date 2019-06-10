@@ -24,7 +24,6 @@ public:
     int yaw   = 0; // horizontal
     int roll  = 0;
 
-
     //----------------------------------------------
 
     Camera(){};

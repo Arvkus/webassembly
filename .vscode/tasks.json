@@ -5,7 +5,7 @@
             "label": "Build",
             "type": "shell",
 
-            "command": "cd ${workspaceFolder} \n g++ -Wall -std=c++17 cpp/src/*.cpp -o \"cpp/bin/main.out\" -I cpp/include -lGLESv2 -lSDL2 ",
+            "command": "cd ${workspaceFolder} \n g++ cpp/src/* -o \"cpp/bin/main.out\" -I cpp/include -l GLESv2 -l SDL2 -l assimp -std=c++17 -Wall",
 
             "presentation": {
                 "echo": false,
@@ -18,8 +18,6 @@
 
 
         }
-
-        
 
     ]
 }
