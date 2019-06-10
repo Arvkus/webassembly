@@ -39,10 +39,16 @@ void main_loop(){ loop(); }
         }
     }
 
-    EM_JS(void,display_fps,(int f),{
+    EM_JS(void, display_fps,(int f),{
         document.querySelector("#span_fps").innerHTML = "Kadrai: " + f;
     })
+
+    EM_JS(void, main_ready,(),{
+        let elem = document.querySelector("#loading_sceen");
+        elem.parentNode.removeChild(elem);
+    })
 #else
+    void main_ready(){std::cout<<"Ready!"<<std::endl;}
     void display_fps(int f){
         //std::cout<<"Current fps: "<<f<<std::endl;
     }
@@ -50,7 +56,6 @@ void main_loop(){ loop(); }
 
 
 int main(int argc, char *argv[]) {
-    GLenum err;
     Canvas canvas = Canvas();
     Camera camera = Camera();
 
@@ -83,18 +88,13 @@ int main(int argc, char *argv[]) {
         view = camera.zoom(0); // update camera position 
     };
     
-
     //------------------------------------------------------------------------
     bool mouse_hold = false;
     int frame_counter = 0;
     
-
     std::chrono::time_point<std::chrono::system_clock> last_update;
     last_update = std::chrono::system_clock::now();
 
-    if((err = glGetError()) != GL_NO_ERROR){
-        std::cout<<"error 2: " << err << std::endl;
-    }
     loop = [&]{ 
 
         // milli > micro > nano
@@ -152,6 +152,9 @@ int main(int argc, char *argv[]) {
 
         SDL_GL_SwapWindow(window);
     };
+
+    // ready to loop
+    main_ready();
 
     // main loop
     #ifdef EMSCRIPTEN

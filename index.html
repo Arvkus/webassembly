@@ -10,6 +10,8 @@
 </head>
 
 <body>
+    <div id="loading_sceen"> <div>Kraunama...</div> </div>
+
     <main class="d-flex">
         <section class="flex-1">
             <canvas id="renderer" oncontextmenu="event.preventDefault()"></canvas>
@@ -89,6 +91,16 @@
     var Module = {
         canvas: renderer
     }
+
+
+
+    window.addEventListener('load', function(){
+        console.log(Module)
+
+    }, false )
+
+
+
 </script>
 <script src="module.js"></script>
 
