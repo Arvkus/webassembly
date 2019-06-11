@@ -158,7 +158,7 @@ int main(int argc, char *argv[]) {
 
     // main loop
     #ifdef EMSCRIPTEN
-        emscripten_set_main_loop(main_loop, 1000, true);
+        emscripten_set_main_loop(main_loop, 0, true);
     #else
         while(true){
             loop();
