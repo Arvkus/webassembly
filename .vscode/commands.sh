@@ -44,5 +44,5 @@ git clone https://github.com/emscripten-core/emsdk.git # emscripten
 git clone https://github.com/assimp/assimp.git # assimp biblioteka
 git clone https://github.com/Arvkus/webassembly.git # mano projektas
 
-
+Github workflow test
 
