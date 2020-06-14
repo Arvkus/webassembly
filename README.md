@@ -1,6 +1,4 @@
-# webassembly
-Demo: https://arvkus.github.io/webassembly/index.html
-
+# WebAssembly
 ```sh
 # compile
 g++ cpp/src/* \
